@@ -6,7 +6,8 @@ export default defineNuxtConfig({
     ]
   },
   modules: [
-    '@sidebase/nuxt-auth'
+    '@sidebase/nuxt-auth',
+    '@nuxt/ui'
   ],
   typescript: {
     shim: false
