@@ -1,6 +1,5 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,12 +7,105 @@ generator client {
 datasource db {
   // NOTE: You probably want to change this to another database later on
   provider = "sqlite"
-
   // This value is read from the .env file.
   url      = env("DATABASE_URL")
 }
 
 model Example {
   id          String @id @default(uuid())
+  description String
   details     String
+}
+
+model Appointment {
+  id      String @id @default(uuid())
+  staff   Staff  @relation(fields: [staffId], references: [id])
+  staffId String
+
+  patient   Patient @relation(fields: [patientId], references: [id])
+  patientId String
+
+  dateTime DateTime @default(now())
+  status   String
+}
+
+model Patient {
+  id        String @id @default(uuid())
+  allergies String @default("")
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+
+  appointments Appointment[]
+  reports      Report[]
+}
+
+model Staff {
+  id           String        @id @default(uuid())
+  user         User          @relation(fields: [userId], references: [id])
+  userId       String        @unique
+  appointments Appointment[]
+  reports      Report[]
+}
+
+model Report {
+  id            String @id @default(uuid())
+  illness       String
+  symptoms      String
+  presccription String
+
+  patient   Patient @relation(fields: [patientId], references: [id])
+  patientId String
+
+  staff   Staff  @relation(fields: [staffId], references: [id])
+  staffId String
+
+  allocatedMedicines AllocatedMedicine[]
+
+  dateTime DateTime @default(now())
+}
+
+model AllocatedMedicine {
+  id       String @id @default(uuid())
+  name     String
+  quantity String
+  price    Float
+  category String
+
+  report   Report @relation(fields: [reportId], references: [id])
+  reportId String
+
+  createdAt DateTime @default(now())
+}
+
+model Medicine {
+  id        String   @id @default(uuid())
+  name      String
+  quantity  String
+  price     Float
+  category  String
+  code      String
+  createdAt DateTime @default(now())
+}
+
+model User {
+  id            String   @id @default(uuid())
+  password      String
+  firstName     String
+  lastName      String
+  middleName    String
+  contactNumber Int
+  age           Int
+  weight        Float
+  height        Float
+  gender        String
+  email         String   @unique
+  address       String
+  title         String
+  role          String
+  status        String
+  profilePhoto  String?
+  Patient       Patient?
+  Staff         Staff?
+  createdAt     DateTime @default(now())
 }
