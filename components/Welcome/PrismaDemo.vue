@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 const { data: examples } = useFetch('/api/examples')
+
 </script>
 <template>
   <div class="layout">
@@ -19,7 +20,7 @@ const { data: examples } = useFetch('/api/examples')
         <WelcomeButtonLink href="https://sidebase.io/sidebase/components/prisma" :blank="true">
           Documentation
         </WelcomeButtonLink>
-        
+
       </div>
     </div>
   </div>
