@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { PrismaClient } from '@prisma/client'
 import { publicProcedure, router } from '../trpc'
+import {awaitExpression} from "@babel/types";
 
 const include = {
   doctor: {
@@ -27,10 +28,24 @@ const include = {
   }
 }
 export const appointmentsRouter = router({
-  getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.appointment.findMany({
+  getAll: publicProcedure.query(async ({ ctx }) => {
+    const all = await ctx.prisma.appointment.findMany({
       where: { status: 'scheduled' },
+      orderBy: {
+        dateTime: 'asc'
+      },
       include
+    })
+    return all.map((ap) => {
+      return {
+        id: ap.id,
+        patientId: ap.patientId,
+        doctorId: ap.doctorId,
+        doctorNames: [ap.doctor.user.firstName, ap.doctor.user.middleName, ap.doctor.user.lastName].join(' '),
+        patientNames: [ap.patient.user.firstName, ap.patient.user.middleName, ap.patient.user.lastName].join(' '),
+        status: ap.status,
+        dateTime: ap.dateTime
+      }
     })
   }),
   patient: publicProcedure
@@ -44,6 +59,9 @@ export const appointmentsRouter = router({
         where: {
           patientId: input.patientId,
           status: 'scheduled'
+        },
+        orderBy: {
+          dateTime: 'asc'
         },
         include
       })
@@ -89,6 +107,9 @@ export const appointmentsRouter = router({
           doctorId: input.doctorId,
           status: 'scheduled'
         },
+        orderBy: {
+          dateTime: 'asc'
+        },
         include
       })
       if (!doctorAppointments) {
@@ -97,9 +118,18 @@ export const appointmentsRouter = router({
       return doctorAppointments
     }),
 
-  doctorScheduleAtDate: publicProcedure.input(z.object({ dateTime: z.date() })).query(({ ctx, prisma }) => {
+  doctorScheduleAtDate: publicProcedure.input(
+    z.object({ dateTime: z.date(), doctorId: z.string() })).query( async ({ctx, input     }) => {
+    const docsAppointments = await ctx.prisma.appointment.findMany({where: {doctorId: input.doctorId as string}})
+    const scheduled: Array<any> = []
 
-  })
+    docsAppointments.forEach(dap=>{
+      if (dap.dateTime.toDateString() == input.dateTime.toDateString()) {
+        scheduled.push(dap.dateTime.toLocaleTimeString())
+      }
+    })
+    return scheduled
+  }),
 
   addToQue: publicProcedure.input(
     z.object({
