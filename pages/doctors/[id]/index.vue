@@ -32,7 +32,7 @@ function parseAppointment (appointment:any, no:number) {
   return {
     patientId: appointment.patientId,
     doctorId: appointment.doctorId,
-    appointmentId: appointment.id,
+    id: appointment.id,
     status: getAppointmentStatus(appointment.dateTime),
     no,
     doctorNames: appointment.doctor.user.firstName + ' ' + appointment.doctor.user.middleName + ' ' + appointment.doctor.user.lastName,

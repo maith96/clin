@@ -2,7 +2,6 @@
 const props = defineProps({
   patients: Object
 })
-const patients = props.patients
 
 const columns = [
   {
@@ -42,20 +41,23 @@ const columns = [
     label: 'Date Created'
   }
 ]
+const page = ref(1)
+const pageCount = 5
+const rows = computed(() => toRef(props, 'patients').value?.slice((page.value - 1) * pageCount, (page.value * pageCount)))
 
 </script>
 
 <template>
   <div class="my-3 bg-white border border-1 border-gray-200 shadow-sm">
     <h1 class="bg-orange-400 p-3 flex items-center text-lg"><UIcon name="i-heroicons-user-solid" class="mr-3"/> Patients</h1>
-    <UTable :columns="columns" :rows="patients" class="w-100 p-3 mb-10">
+    <UTable :columns="columns" :rows="rows" class="w-100 p-3 mb-10">
       <template #id-data="{ row }">
-        <NuxtLink :to="`/patients/${row.id}`" class="hover:text-primary-400">
+        <NuxtLink :to="`/patients/${row.id}`" class="hover:text-orange-400">
           {{ row.id }}
         </NuxtLink>
       </template>
     </UTable>
-    <UButton @click="navigateTo('/patients/new')" class="mx-3 my-5 bg-orange-400">
+    <UButton class="mx-3 my-5 bg-orange-400" @click="navigateTo('/patients/new')">
       New Patient
     </UButton>
   </div>

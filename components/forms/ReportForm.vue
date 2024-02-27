@@ -18,7 +18,7 @@ const validate = (state: any): FormError[] => {
 </script>
 
 <template>
-  <div class="my-5 bg-white border border-1 border-gray-200 shadow-sm flex-2 flex flex-col justify-between">
+  <div class="my-5 bg-white border border-1 border-gray-200 shadow-sm flex-2 flex flex-col justify-between min-w-[400px]">
     <div>
       <h1 class="bg-cyan-400 p-5 flex items-center text-lg"><UIcon name="i-heroicons-calendar-days-16-solid" class="mr-3" />{{ $attrs.patient?.firstName }}'s Report</h1>
     </div>
@@ -35,7 +35,7 @@ const validate = (state: any): FormError[] => {
         <UInput v-model="state.prescription" type="text" />
       </UFormGroup>
 
-      <UButton type="submit" class="bg-cyan-400">
+      <UButton type="submit" class="bg-cyan-600 hover:bg-cyan-700">
         Submit report
       </UButton>
     </UForm>

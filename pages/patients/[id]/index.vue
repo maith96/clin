@@ -2,6 +2,7 @@
 import UserDetails from '~/components/views/userDetails.vue'
 import Appointments from '~/components/views/Appointments.vue'
 import Reports from '~/components/views/Reports.vue'
+import {onlyDateTime} from "~/utils/formatTime";
 
 const { $client } = useNuxtApp()
 const { id } = useRoute().params
@@ -12,19 +13,32 @@ const user = patientData?.user
 const reports = ref<any>(await getReports())
 
 const { data, refresh } = await useAsyncData(async () => await $client.appointments.patient.query({ patientId: id as string }))
+const appointments = computed(() => {
+  return data.value?.map((d) => {
+    if (data.value) {
+      return { ...d, no: (data.value.indexOf(d) + 1), dateTime: onlyDateTime(d.dateTime) }
+    }
+    return []
+  })
+})
+
 async function getReports () {
   const data = await $client.reports.patient.query({ patientId: id as string })
-  return (data ?? [])
+  return data?.map((d) => {
+    return { ...d, no: data?.indexOf(d) + 1, dateTime: onlyDateTime(d.dateTime) }
+  }) ?? []
 }
 
 </script>
 
 <template>
-  <div class="flex  gap-5  md:w-[70%] m-auto ">
-    <Appointments access="patient" :appointments="data" @refresh-appointments="refresh()"/>
-    <UserDetails :user-data="user" class="flex-2" />
+  <div>
+    <div class="flex  gap-5  md:w-[70%] m-auto ">
+      <Appointments access="patient" :appointments="appointments" @refresh-appointments="refresh()"/>
+      <UserDetails :user-data="user" class="flex-2 min-w-[400px]" />
+    </div>
+    <Reports :reports="reports"/>
   </div>
-  <Reports :reports="reports"/>
 </template>
 
 <style scoped>
