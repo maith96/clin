@@ -5,31 +5,49 @@ const { id } = useRoute().params
 const { $client } = useNuxtApp()
 const emit = defineEmits(['refreshAppointments'])
 
-const doctorRes = await $client.doctors.getAll.useQuery()
-const doctors = doctorRes.data.value?.map((d) => {
-  return {
-    id: d.id,
-    name: [d.user.firstName, d.user.middleName, d.user.lastName].join(' ')
-  }
-})
-
-const availableTimes = () => {
-  const t = []
-  for (let i = 8; i < 17; i++) {
-    t.push({
-      id: `T${(i < 10 ? '0' : '') + i}:00`,
-      name: `T${(i < 10 ? '0' : '') + i}:00`
-    })
-  }
-
-  return t
+async function getDoctors () {
+  const doctorRes = await $client.doctors.getAll.useQuery()
+  return doctorRes.data.value?.map((d) => {
+    return {
+      id: d.id,
+      name: [d.user.firstName, d.user.middleName, d.user.lastName].join(' ')
+    }
+  })
 }
 
-const selectedDate = ref('2024-02-29')
-const selectedTime = ref(availableTimes()[0].id)
-const selectedDoctor = ref(doctors ? doctors[0].id : undefined)
+function getAllTimes () {
+  const allTimes = []
+  for (let i = 8; i < 17; i++) {
+    const t = `${(i < 10 ? '0' : '') + i}:00`
+    allTimes.push({ id: 'T' + t, name: t })
+  }
+  return allTimes
+}
+
+async function getDoctorAvailableTimes () {
+  if (selectedDate.value && selectedDoctor.value) {
+    const timesDoctorNotAvailable = await $client.appointments.doctorScheduleAtDate.query({ doctorId: selectedDoctor.value as string, dateTime: new Date(selectedDate.value) })
+    return getAllTimes().filter(t => (!timesDoctorNotAvailable.find(tNot => !!tNot.includes(t.name))))
+  }
+  return []
+}
+const doctors = await getDoctors()
+const selectedDoctor = ref<any>(undefined)
+
+const selectedDate = ref<any>(null)
 const isDateValid = computed(() => !(new Date(selectedDate.value) < new Date()))
 
+const doctorAvailableTimes = ref(await getDoctorAvailableTimes())
+const selectedTime = ref<any |null>(undefined)
+
+watch(selectedDoctor, async () => {
+  doctorAvailableTimes.value = await getDoctorAvailableTimes()
+})
+watch(selectedDate, async () => {
+  doctorAvailableTimes.value = await getDoctorAvailableTimes()
+})
+
+const submitDisabled = computed(() => !(!!selectedTime.value && !!selectedDoctor.value && isDateValid.value))
 const onSubmit = async () => {
   const dateTime = new Date(selectedDate.value.concat(selectedTime.value))
   const res = await $client.appointments.schedule.mutate({
@@ -41,6 +59,9 @@ const onSubmit = async () => {
     emit('refreshAppointments')
     alert('appointment has been scheduled')
     isFormModalOpen.value = false
+    selectedDoctor.value = null
+    selectedTime.value = null
+    selectedDate.value = null
   }
 }
 </script>
@@ -69,10 +90,10 @@ const onSubmit = async () => {
               </p>
             </UFormGroup>
             <UFormGroup label="Time">
-              <USelect v-model="selectedTime" :options="availableTimes()" placeholder="Select Time" value-attribute="id" option-attribute="name" />
+              <USelect v-model="selectedTime" :options="doctorAvailableTimes" placeholder="Select Time" value-attribute="id" option-attribute="name" />
             </UFormGroup>
             <UFormGroup>
-              <UButton :disabled="!isDateValid && !!selectedTime" @click="onSubmit">
+              <UButton :disabled="submitDisabled" @click="onSubmit">
                 Submit
               </UButton>
             </UFormGroup>

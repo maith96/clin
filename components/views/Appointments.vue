@@ -7,9 +7,6 @@ const props = defineProps({
   appointments: Object
 })
 
-const rows = toRef(props, 'appointments').value?.map((ap: any) => {
-  return { ...ap, no: (toRef(props, 'appointments').value?.indexOf(ap) + 1), dateTime: onlyDateTime(ap.dateTime) }
-})
 const columns = [
   {
     key: 'no',
@@ -51,6 +48,10 @@ columns.push({
 })
 
 const emit = defineEmits(['refreshAppointments'])
+
+const page = ref(1)
+const pageCount = 5
+const rows = computed(() => toRef(props, 'appointments').value?.slice((page.value - 1) * pageCount, (page.value * pageCount)))
 </script>
 
 <template>
@@ -58,9 +59,12 @@ const emit = defineEmits(['refreshAppointments'])
     <div>
       <h1 class="bg-green-400 p-5 flex items-center text-lg"><UIcon name="i-heroicons-calendar-days-16-solid" class="mr-3"/> {{ props.access === 'all'? 'Que List' : 'Scheduled Appointments' }}</h1>
       <UTable :columns="columns" :rows="rows" class="max-w-100 p-5" />
+      <div class="flex justify-end px-3 py-3.5 border-t border-gray-200 dark:border-gray-700">
+        <UPagination v-model="page" :page-count="pageCount" :total="props.appointments?.length" />
+      </div>
     </div>
     <div>
-      <AppointmentForm class="mx-3 my-5" @refresh-appointments="$emit('refreshAppointments')" />
+      <AppointmentForm class="mx-3 my-5" @refresh-appointments="emit('refreshAppointments')" />
     </div>
   </div>
 </template>

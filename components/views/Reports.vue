@@ -25,6 +25,12 @@ const columns = [
     label: 'Date'
   }
 ]
+const props = defineProps({
+  reports: Object
+})
+const page = ref(1)
+const pageCount = 5
+const rows = computed(() => toRef(props, 'reports').value?.slice((page.value - 1) * pageCount, (page.value * pageCount)))
 
 </script>
 
@@ -34,7 +40,10 @@ const columns = [
       <div>
         <h1 class="bg-cyan-400 p-5 flex items-center text-lg"><UIcon name="i-heroicons-clipboard-20-solid" class="mr-3"/>Reports</h1>
 
-        <UTable :columns="columns" :rows="$attrs.reports" class="max-w-100 p-5" />
+        <UTable :columns="columns" :rows="rows" class="max-w-100 p-5" />
+        <div class="flex justify-end px-3 py-3.5 border-t border-gray-200 dark:border-gray-700">
+          <UPagination v-model="page" :page-count="pageCount" :total="props.reports?.length" />
+        </div>
       </div>
 
       <div>
