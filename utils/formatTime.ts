@@ -4,8 +4,9 @@ export const calcWaitTime = (date:Date) => {
   const timeDifference = date.getTime() - currentDate.getTime()
 
   // Convert milliseconds to minutes
-  const minutesDifference = Math.floor(timeDifference / (1000 * 60))
-  return (minutesDifference > 0) ? `${minutesDifference} minutes` : 'now'
+  const minutesToWait = Math.floor(timeDifference / (1000 * 60))
+  if (minutesToWait <= 0) { return 'now' }
+  return (minutesToWait > 59) ? `${parseInt(minutesToWait / 60)} hours` : `${minutesToWait} minutes`
 }
 
 export const onlyDateTime = (date:Date) => {

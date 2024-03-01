@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { FormError, FormSubmitEvent } from '#ui/types'
+import {sendSMS} from "~/utils/vonage.hts";
 const { $client } = useNuxtApp()
 const toast = useToast()
 const res = await $client.patients.allIds.query()
@@ -16,10 +17,11 @@ const validate = (state: any): FormError[] => {
   return errors
 }
 async function onSubmit (event: FormSubmitEvent<any>) {
-  const res = await $client.appointments.create.mutate({ patientId: event.data.patient })
+  const res = await $client.appointments.addToQue.mutate({ patientId: event.data.patient })
   if (res.appointmentId) {
     state.patient = ''
     alert('Appointment has been set successfully!')
+    // await sendSMS('254748075877')
   } else {
     alert(res.message)
   }

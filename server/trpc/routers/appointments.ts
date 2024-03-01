@@ -2,6 +2,9 @@ import { z } from 'zod'
 import { PrismaClient } from '@prisma/client'
 import { publicProcedure, router } from '../trpc'
 import {awaitExpression} from "@babel/types";
+import {sendSMS} from "~/utils/vonage.hts";
+import { Vonage } from '@vonage/server-sdk'
+
 
 const include = {
   doctor: {
@@ -79,7 +82,7 @@ export const appointmentsRouter = router({
         }
       })
     }),
-  updateSatus: publicProcedure.input(
+  updateStatus: publicProcedure.input(
     z.object({
       id: z.string(),
       status: z.string()
@@ -143,6 +146,7 @@ export const appointmentsRouter = router({
     const doctor = await availableDoctor(ctx.prisma)
     if (doctor) {
       const appointment1 = await createAppointment('scheduled', doctor.id, input.patientId, new Date(), ctx.prisma)
+      // await sendSMS('25474875877')
       return { appointmentId: appointment1.id }
     }
 
@@ -151,6 +155,7 @@ export const appointmentsRouter = router({
       const dateTime = earliestAppointment.dateTime
       dateTime.setMinutes(earliestAppointment.dateTime.getMinutes() + 30)
       const appointment2 = await createAppointment('scheduled', earliestAppointment.doctorId, earliestAppointment.patientId, dateTime, ctx.prisma)
+      // await sendSMS('25474875877')
       return { appointmentId: appointment2.id }
     }
     return { appointmentId: null, message: 'Could not create appointment' }
