@@ -55,13 +55,15 @@ const onSubmit = async () => {
     doctorId: selectedDoctor.value as string,
     dateTime: dateTime as Date
   })
-  if (res.id) {
+  if (res.appointment.id) {
     emit('refreshAppointments')
     alert('appointment has been scheduled')
     isFormModalOpen.value = false
     selectedDoctor.value = null
     selectedTime.value = null
     selectedDate.value = null
+    const smsRes = await $client.sms.send.query({ text: `you have scheduled an appointment with a doctor on ${res.appointment.dateTime}` })
+    console.log(smsRes)
   }
 }
 </script>

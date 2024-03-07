@@ -5,7 +5,31 @@ export const usersRouter = router({
   getAll: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.user.findMany()
   }),
-
+  authen: publicProcedure.input(
+    z.object({
+      email: z.string(),
+      password: z.string()
+    })
+  ).query(async ({ ctx, input}) => {
+    const user = await ctx.prisma.user.findUnique({
+      where: {
+        email: input.email,
+        password: input.password
+      },
+      select: {
+        firstName: true,
+        lastName: true,
+        role: true,
+        Patient: {
+          select: { id: true }
+        },
+        Staff: {
+          select: { id: true }
+        }
+      }
+    })
+    return { message: 'hi' }
+  }),
   create: publicProcedure.input(
     z.object({
       firstName: z.string(),

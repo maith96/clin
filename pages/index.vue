@@ -1,37 +1,17 @@
-<script setup lang="ts">
-import type { FormError, FormSubmitEvent } from '#ui/types'
-
-const state = reactive({
-  email: undefined,
-  password: undefined
-})
-
-const validate = (state: any): FormError[] => {
-  const errors = []
-  if (!state.email) { errors.push({ path: 'email', message: 'Required' }) }
-  if (!state.password) { errors.push({ path: 'password', message: 'Required' }) }
-  return errors
-}
-
-async function onSubmit (event: FormSubmitEvent<any>) {
-  // Do something with data
-  console.log(event.data.email)
-}
+<script lang="ts" setup>
+import LoginForm from '~/components/forms/LoginForm.vue'
+const { $client } = useNuxtApp()
+const ddd = await $client.users.authen.query({ email: '99', password: '99'})
+console.log(ddd)
 </script>
 
 <template>
-  <UForm :validate="validate" :state="state" class="space-y-4" @submit="onSubmit">
-    <UFormGroup label="Email" name="email">
-      <UInput v-model="state.email" />
-    </UFormGroup>
-
-    <UFormGroup label="Password" name="password">
-      <UInput v-model="state.password" type="password" />
-    </UFormGroup>
-
-    <UButton type="submit">
-      Submit
-    </UButton>
-  </UForm>
+  <div class="my-10 bg-white border border-1 border-gray-200 shadow-sm md:w-[70%] m-auto">
+    <h1 class="bg-primary p-5 flex items-center text-xl font-bold text-white text-center"> Login</h1>
+    <LoginForm />
+  </div>
 </template>
 
+<style scoped>
+
+</style>

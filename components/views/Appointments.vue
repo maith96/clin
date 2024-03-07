@@ -46,8 +46,11 @@ columns.push({
   key: 'dateTime',
   label: props.access === 'all' ? 'Wait Time' : 'Date'
 })
-
-const emit = defineEmits(['refreshAppointments'])
+columns.push({
+  key: 'actions',
+  label: ''
+})
+const emit = defineEmits(['refreshAppointments', 'cancelAppointment'])
 
 const page = ref(1)
 const pageCount = 5
@@ -58,7 +61,11 @@ const rows = computed(() => toRef(props, 'appointments').value?.slice((page.valu
   <div class="my-5 bg-white border border-1 border-gray-200 shadow-sm flex-1 flex flex-col justify-between">
     <div>
       <h1 class="bg-green-400 p-5 flex items-center text-lg"><UIcon name="i-heroicons-calendar-days-16-solid" class="mr-3"/> {{ props.access === 'all'? 'Que List' : 'Scheduled Appointments' }}</h1>
-      <UTable :columns="columns" :rows="rows" class="max-w-100 p-5" />
+      <UTable :columns="columns" :rows="rows" class="max-w-100 p-5">
+        <template #actions-data="{ row }">
+          <UButton label="Cancel" icon="i-heroicons-x-mark-16-solid" class="bg-red-500 hover:bg-red-600" @click="emit('cancelAppointment', row.id)"/>
+        </template>
+      </UTable>
       <div class="flex justify-end px-3 py-3.5 border-t border-gray-200 dark:border-gray-700">
         <UPagination v-model="page" :page-count="pageCount" :total="props.appointments?.length" />
       </div>
