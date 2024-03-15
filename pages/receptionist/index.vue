@@ -1,8 +1,7 @@
 <script setup lang="ts">
 
-import Appointments from '~/components/views/Appointments.vue'
-import AppointmentForm from '~/components/forms/AppointmentForm.vue'
-import QueForm from '~/components/forms/QueForm.vue'
+import QueList from '~/components/QueList.vue'
+
 const { $client } = useNuxtApp()
 
 const patientsRes = await $client.patients.getAll.useQuery()
@@ -23,23 +22,26 @@ async function cancelAppointment (id: string) {
   if (canceledAppointment.id) {
     refresh()
   } else {
-    console.log('failed to delete appointment')
+    alert('failed to delete appointment')
   }
 }
 
-const { data: appointments, refresh } = useAsyncData('appointments', async() => {
+const { data: appointments, refresh } = useAsyncData('appointments', async () => {
   const appointmentsRes = await $client.appointments.getAll.query()
   return appointmentsRes.map((a) => {
     return { ...a, dateTime: calcWaitTime(a.dateTime), no: appointmentsRes.indexOf(a) + 1 }
   })
 })
+
 </script>
 
 <template>
   <div class="md:w-[70%] m-auto">
+    <!-- <div class="flex justify-center">
+    <ULink to="/receptionist/que-list">Que List</ULink>
+  </div> -->
     <div class="flex gap-5">
-      <Appointments access="all" :appointments="appointments" @cancel-appointment="cancelAppointment"/>
-      <QueForm @refresh-appointments="refresh" />
+      <QueList @cancel-appointment="cancelAppointment" />
     </div>
     <AllPatients :patients="patients" />
   </div>

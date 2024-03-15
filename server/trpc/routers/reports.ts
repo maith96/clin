@@ -1,9 +1,20 @@
 import { z } from 'zod'
 import { publicProcedure, router } from '../trpc'
-import { usersRouter } from '~/server/trpc/routers/users'
-import { patientsRouter } from '~/server/trpc/routers/patients'
 
 export const reportsRouter = router({
+  get: publicProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+    return await ctx.prisma.report.findUnique({
+      where: { id: input.id },
+      include: {
+        doctor: {
+          include: { user: true }
+        },
+        patient: {
+          include: { user: true }
+        }
+      }
+    })
+  }),
   patient: publicProcedure
     .input(
       z.object({
@@ -31,6 +42,9 @@ export const reportsRouter = router({
       const patientReports = await ctx.prisma.report.findMany({
         where: {
           doctorId: input.doctorId
+        },
+        orderBy: {
+          dateTime: 'desc'
         }
       })
       if (!patientReports) {

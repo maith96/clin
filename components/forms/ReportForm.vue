@@ -1,5 +1,21 @@
 <script setup lang="ts">
 import type { FormError } from '#ui/types'
+const { $client } = useNuxtApp()
+
+const emit = defineEmits(['refreshAppointments'])
+
+async function onSubmitPatientReport () {
+  if (validate(state).length > 0) { return }
+  // console.log({ ...state })
+
+  const res = await $client.reports.create.mutate({ ...state, patientId: selectedAppointment.value?.patientId, doctorId: selectedAppointment.value?.doctorId })
+  if (res.reportId) {
+    emit('refreshAppointments')
+    await $client.appointments.completed.mutate({ id: selectedAppointment.value?.id })
+    alert('Report added succsfully. You can now view the certificate.')
+  }
+  modalIsOpen.value = false
+}
 
 const state = reactive({
   illness: '',
@@ -15,29 +31,48 @@ const validate = (state: any): FormError[] => {
   return errors
 }
 
+const props = defineProps({
+  selectedAppointment: Object
+})
+
+// let modalIsOpen = toRef(props, 'isReportFormModalOpen')
+const modalIsOpen = ref(false)
+const selectedAppointment = toRef(props, 'selectedAppointment')
+
 </script>
 
 <template>
-  <div class="my-5 bg-white border border-1 border-gray-200 shadow-sm flex-2 flex flex-col justify-between min-w-[400px]">
-    <div>
-      <h1 class="bg-cyan-400 p-5 flex items-center text-lg"><UIcon name="i-heroicons-calendar-days-16-solid" class="mr-3" />{{ $attrs.patient?.firstName }}'s Report</h1>
-    </div>
-    <UForm :validate="validate" :state="state" @submit="$attrs.onSSubmit" class="space-y-4 p-5">
-      <UFormGroup label="Illness" name="Illness">
-        <UInput v-model="state.illness" />
-      </UFormGroup>
+  <UButton label="New Report" class="bg-white text-cyan-500 border border-2 border-cyan-400 hover:bg-cyan-100" @click="modalIsOpen=true" />
 
-      <UFormGroup label="Symptoms" name="symptoms">
-        <UInput v-model="state.symptoms" type="text" />
-      </UFormGroup>
+  <UModal v-model="modalIsOpen">
+    <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+      <template #header>
+        <h1 class="font-bold text-lg text-center">
+          <em>{{ selectedAppointment?.patientNames }}</em> Report
+        </h1>
+      </template>
 
-      <UFormGroup label="Prescription" name="prescription">
-        <UInput v-model="state.prescription" type="text" />
-      </UFormGroup>
+      <div>
+        <UForm :validate="validate" :state="state" class="space-y-4 p-5">
+          <UFormGroup label="Illness" name="Illness">
+            <UInput v-model="state.illness" />
+          </UFormGroup>
 
-      <UButton type="submit" class="bg-cyan-600 hover:bg-cyan-700">
-        Submit report
-      </UButton>
-    </UForm>
-  </div>
+          <UFormGroup label="Symptoms" name="symptoms">
+            <UInput v-model="state.symptoms" type="text" />
+          </UFormGroup>
+
+          <UFormGroup label="Prescription" name="prescription">
+            <UInput v-model="state.prescription" type="text" />
+          </UFormGroup>
+
+          <UButton type="submit" class="bg-cyan-600 hover:bg-cyan-700" @click="onSubmitPatientReport">
+            Submit report
+          </UButton>
+        </UForm>
+      </div>
+
+      <template #footer />
+    </UCard>
+  </UModal>
 </template>

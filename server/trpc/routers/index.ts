@@ -1,5 +1,7 @@
 import { z } from 'zod'
 import { publicProcedure, router } from '../trpc'
+import { queRouter } from './que'
+import { smsRouter } from './sms'
 import { usersRouter } from '~/server/trpc/routers/users'
 import { patientsRouter } from '~/server/trpc/routers/patients'
 import { appointmentsRouter } from '~/server/trpc/routers/appointments'
@@ -25,7 +27,9 @@ export const appRouter = router({
   appointments: appointmentsRouter,
   reports: reportsRouter,
   doctors: doctorsRouter,
-  staffs: staffsRouter
+  staffs: staffsRouter,
+  sms: smsRouter,
+  que: queRouter
 })
 
 // export type definition of API

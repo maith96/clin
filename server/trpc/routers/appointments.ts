@@ -1,10 +1,6 @@
 import { z } from 'zod'
 import { PrismaClient } from '@prisma/client'
 import { publicProcedure, router } from '../trpc'
-import {awaitExpression} from "@babel/types";
-import {sendSMS} from "~/utils/vonage.hts";
-import { Vonage } from '@vonage/server-sdk'
-
 
 const include = {
   doctor: {
@@ -31,6 +27,21 @@ const include = {
   }
 }
 export const appointmentsRouter = router({
+  cancel: publicProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
+    return await ctx.prisma.appointment.delete({ where: { id: input.id } })
+  }),
+
+  completed: publicProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
+    const ap = await ctx.prisma.appointment.update({
+      where: { id: input.id },
+      data: {
+        inQue: false,
+        status: 'completed'
+      }
+    })
+    return ap
+  }),
+
   getAll: publicProcedure.query(async ({ ctx }) => {
     const all = await ctx.prisma.appointment.findMany({
       where: { status: 'scheduled' },
@@ -104,8 +115,8 @@ export const appointmentsRouter = router({
         doctorId: z.string()
       })
     )
-    .query(({ input, ctx }) => {
-      const doctorAppointments = ctx.prisma.appointment.findMany({
+    .query(async ({ input, ctx }) => {
+      const doctorAppointments = await ctx.prisma.appointment.findMany({
         where: {
           doctorId: input.doctorId,
           status: 'scheduled'
@@ -118,74 +129,32 @@ export const appointmentsRouter = router({
       if (!doctorAppointments) {
         throw createError({ statusCode: 404, statusMessage: 'Failed to get appointments of doctor' })
       }
+
       return doctorAppointments
     }),
 
   doctorScheduleAtDate: publicProcedure.input(
-    z.object({ dateTime: z.date(), doctorId: z.string() })).query( async ({ctx, input     }) => {
-    const docsAppointments = await ctx.prisma.appointment.findMany({where: {doctorId: input.doctorId as string}})
+    z.object({ dateTime: z.date(), doctorId: z.string() })).query(async ({ ctx, input }) => {
+    const docsAppointments = await ctx.prisma.appointment.findMany({ where: { doctorId: input.doctorId as string } })
     const scheduled: Array<any> = []
 
-    docsAppointments.forEach(dap=>{
-      if (dap.dateTime.toDateString() == input.dateTime.toDateString()) {
+    docsAppointments.forEach((dap) => {
+      if (dap.dateTime.toDateString() === input.dateTime.toDateString()) {
         scheduled.push(dap.dateTime.toLocaleTimeString())
       }
     })
     return scheduled
   }),
-
-  addToQue: publicProcedure.input(
-    z.object({
-      patientId: z.string()
-    })
-  ).mutation(async ({ ctx, input }) => {
-    if (await patientHasAppointments(input.patientId, ctx.prisma)) {
-      return { appointmentId: null, message: 'Patient has a scheduled appointment' }
-    }
-
-    const doctor = await availableDoctor(ctx.prisma)
-    if (doctor) {
-      const appointment1 = await createAppointment('scheduled', doctor.id, input.patientId, new Date(), ctx.prisma)
-      // await sendSMS('25474875877')
-      return { appointmentId: appointment1.id }
-    }
-
-    const earliestAppointment = await getEarliestAppointment(ctx.prisma)
-    if (earliestAppointment) {
-      const dateTime = earliestAppointment.dateTime
-      dateTime.setMinutes(earliestAppointment.dateTime.getMinutes() + 30)
-      const appointment2 = await createAppointment('scheduled', earliestAppointment.doctorId, earliestAppointment.patientId, dateTime, ctx.prisma)
-      // await sendSMS('25474875877')
-      return { appointmentId: appointment2.id }
-    }
-    return { appointmentId: null, message: 'Could not create appointment' }
-  }),
-
   schedule: publicProcedure.input(z.object({
     patientId: z.string(),
     doctorId: z.string(),
     dateTime: z.date()
   })).mutation(async ({ ctx, input }) => {
-    const appointment = await createAppointment('scheduled', input.doctorId, input.patientId,input.dateTime, ctx.prisma)
-    return { id: appointment.id }
+    const appointment = await createAppointment('scheduled', input.doctorId, input.patientId, input.dateTime, ctx.prisma)
+    return appointment
   })
 })
 
-async function getEarliestAppointment (prisma: PrismaClient) {
-  const earliest = await prisma.appointment.findFirst({
-    where: {
-      OR: [
-        { status: 'scheduled' },
-        { status: 'inProgress' }
-      ]
-    },
-    orderBy: {
-      dateTime: 'asc'
-    }
-  })
-
-  return earliest
-}
 async function createAppointment (status:string, doctorId:string, patientId:string, dateTime:Date, prisma: PrismaClient) {
   const appointment = await prisma.appointment.create({
     data: {
@@ -198,39 +167,6 @@ async function createAppointment (status:string, doctorId:string, patientId:stri
   if (!appointment) { throw createError({ statusCode: 404, statusMessage: 'Failed to create appointment' }) }
 
   return appointment
-}
-async function patientHasAppointments (patientId: string, prisma: PrismaClient) {
-  const appointments = await prisma.appointment.count({
-    where: {
-      patientId,
-      OR: [
-        { status: 'scheduled' },
-        { status: 'inProgress' }
-      ]
-    }
-  })
-  return (appointments > 0)
-}
-
-async function availableDoctor (prisma: PrismaClient) {
-  const doctor = await prisma.staff.findFirst({
-    where: {
-      user: {
-        role: 'doctor'
-      },
-      NOT: {
-        appointments: {
-          some: {
-            status: {
-              in: ['scheduled', 'inProgress']
-            }
-          }
-        }
-      }
-    }
-  })
-
-  return doctor
 }
 
 // export type definition of API

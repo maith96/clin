@@ -13,8 +13,6 @@ const state = reactive({
   password: undefined,
   contactNumber: undefined,
   age: undefined,
-  weight: undefined,
-  height: undefined,
   address: undefined,
   status: 'active',
   role: roles[1],
@@ -32,8 +30,6 @@ const validate = (state: any): FormError[] => {
   if (!state.password) { errors.push({ path: 'password', message: 'Required' }) }
   if (!state.contactNumber) { errors.push({ path: 'contactNumber', message: 'Required' }) }
   if (!state.age) { errors.push({ path: 'age', message: 'Required' }) }
-  if (!state.weight) { errors.push({ path: 'weight', message: 'Required' }) }
-  if (!state.height) { errors.push({ path: 'height', message: 'Required' }) }
   if (!state.address) { errors.push({ path: 'address', message: 'Required' }) }
   if (!state.status) { errors.push({ path: 'status', message: 'Required' }) }
   if (!state.role) { errors.push({ path: 'role', message: 'Required' }) }
@@ -67,19 +63,11 @@ const validate = (state: any): FormError[] => {
     </UFormGroup>
 
     <UFormGroup label="ContactNumber" name="contactNumber">
-      <UInput v-model="state.contactNumber" type="number"/>
+      <UInput v-model="state.contactNumber" type="string" />
     </UFormGroup>
 
     <UFormGroup label="Age" name="age">
       <UInput v-model="state.age" type="number" />
-    </UFormGroup>
-
-    <UFormGroup label="Weight" name="weight">
-      <UInput v-model="state.weight" type="number" />
-    </UFormGroup>
-
-    <UFormGroup label="Height" name="height">
-      <UInput v-model="state.height" type="number" />
     </UFormGroup>
 
     <UFormGroup label="Address" name="address">
@@ -87,15 +75,15 @@ const validate = (state: any): FormError[] => {
     </UFormGroup>
 
     <UFormGroup label="Role" name="role">
-      <USelect v-model="state.role" :options="roles"/>
+      <USelect v-model="state.role" :options="roles" />
     </UFormGroup>
 
     <UFormGroup label="Gender" name="gender">
-      <USelect v-model="state.gender" :options="genders"/>
+      <USelect v-model="state.gender" :options="genders" />
     </UFormGroup>
 
     <UFormGroup label="Title" name="title">
-      <USelect v-model="state.title" :options="titles"/>
+      <USelect v-model="state.title" :options="titles" />
     </UFormGroup>
 
     <UButton type="submit">
@@ -103,4 +91,3 @@ const validate = (state: any): FormError[] => {
     </UButton>
   </UForm>
 </template>
-

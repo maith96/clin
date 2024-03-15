@@ -14,36 +14,45 @@ const validate = (state: any): FormError[] => {
   return errors
 }
 async function onSubmit (event: FormSubmitEvent<any>) {
-  const newAppointment = await $client.appointments.addToQue.mutate({ patientId: event.data.patient })
+  const newAppointment = await $client.que.add.mutate({ patientId: event.data.patient })
   if (newAppointment.appointment?.id) {
     state.patient = ''
     emit('refreshAppointments')
     alert('Patient has been added to Que!')
     // const smsRes = await $client.sms.send.query({ text: 'you have been added to Que })
     // console.log(smsRes)
+    isFormModalOpen.value = false
   } else {
     alert(newAppointment.message)
   }
 }
 
 const emit = defineEmits(['refreshAppointments'])
+
+const isFormModalOpen = ref(false)
+
 </script>
 
 <template>
-  <div class="my-5 bg-white border border-1 border-gray-200 shadow-sm flex-2 flex flex-col justify-between">
-    <div>
-      <h1 class="bg-green-400 p-5 flex items-center text-lg">
-        <UIcon name="i-heroicons-calendar-days-16-solid" class="mr-3" /> New Appointment Form
-      </h1>
-    </div>
-    <UForm :validate="validate" :state="state" class="space-y-4 p-5" @submit="onSubmit">
-      <UFormGroup label="Patient" name="role">
-        <USelect v-model="state.patient" :options="patientIds" placeholder="Search.." />
-      </UFormGroup>
+  <div>
+    <UButton label="Add" class="m-5 border border-2 border-primary bg-white text-primary hover:bg-green-100" @click="isFormModalOpen = true" />
+    <UModal v-model="isFormModalOpen">
+      <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+        <template #header>
+          <h1 class="font-bold text-lg text-center">
+            Addd Patient to Que Form
+          </h1>
+          <UForm :validate="validate" :state="state" class="space-y-4 p-5" @submit="onSubmit">
+            <UFormGroup label="Patient" name="role">
+              <USelect v-model="state.patient" :options="patientIds" placeholder="Search.." />
+            </UFormGroup>
 
-      <UButton type="submit">
-        Schedule Appointment
-      </UButton>
-    </UForm>
+            <UButton type="submit">
+              Schedule Appointment
+            </UButton>
+          </UForm>
+        </template>
+      </UCard>
+    </UModal>
   </div>
 </template>

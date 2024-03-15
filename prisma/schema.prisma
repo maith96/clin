@@ -19,6 +19,7 @@ model Appointment {
   patientId String
   dateTime  DateTime @default(now())
   status    String // scheduled | completed | inProgress
+  inQue     Boolean  @default(false)
   patient   Patient  @relation(fields: [patientId], references: [id])
   doctor    Staff    @relation(fields: [doctorId], references: [id])
 }
@@ -36,6 +37,7 @@ model Staff {
   id           String        @id @default(uuid())
   userId       String        @unique
   shift        String        @default("day")
+  signature String @default("")
   appointments Appointment[]
   reports      Report[]
   user         User          @relation(fields: [userId], references: [id])
@@ -81,10 +83,9 @@ model User {
   firstName     String
   lastName      String
   middleName    String
-  contactNumber Int
+  nationalIdNumber String @default("N/A")
+  contactNumber String
   age           Int
-  weight        Float
-  height        Float
   gender        String
   email         String   @unique
   address       String

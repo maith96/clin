@@ -1,6 +1,8 @@
 <script setup lang="ts">
 
 const isFormModalOpen = ref(false)
+const isQueModalOpen = ref(false)
+
 const { id } = useRoute().params
 const { $client } = useNuxtApp()
 const emit = defineEmits(['refreshAppointments'])
@@ -55,22 +57,29 @@ const onSubmit = async () => {
     doctorId: selectedDoctor.value as string,
     dateTime: dateTime as Date
   })
-  if (res.appointment.id) {
+  console.log(res)
+
+  if (res) {
     emit('refreshAppointments')
     alert('appointment has been scheduled')
     isFormModalOpen.value = false
     selectedDoctor.value = null
     selectedTime.value = null
     selectedDate.value = null
-    const smsRes = await $client.sms.send.query({ text: `you have scheduled an appointment with a doctor on ${res.appointment.dateTime}` })
+    const smsRes = await $client.sms.send.query({ text: `you have scheduled an appointment with a doctor on ${res.dateTime}` })
     console.log(smsRes)
   }
 }
+
+const userStore = useUserStore()
+const queTime = await $client.que.patient.query({ patientId: id as string })
+// const que = await $client.que.patient.query({ patientId: id as string })
 </script>
 
 <template>
   <div>
-    <UButton label="New Appointment" @click="isFormModalOpen = true" />
+    <UButton label="New Appointment" class="ml-5 border border-2 border-primary bg-white text-primary hover:bg-green-100" @click="isFormModalOpen = true" />
+    <UButton v-if="userStore.user?.role === 'patient'" label="Que" class="ml-5 border border-2 border-primary bg-white text-primary hover:bg-green-100" @click="isQueModalOpen = true" />
 
     <UModal v-model="isFormModalOpen">
       <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
@@ -103,6 +112,24 @@ const onSubmit = async () => {
         </div>
 
         <template #footer />
+      </UCard>
+    </UModal>
+
+    <UModal v-model="isQueModalOpen">
+      <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+        <template #header>
+          <h1 class="font-bold text-lg text-center">
+            Wait Time on Que list
+          </h1>
+        </template>
+        <div>
+          <h1 v-if="queTime" class="text-[48px] text-center">
+            {{ calcWaitTime(queTime.dateTime) }}
+          </h1>
+          <h1 v-else class="text-center">
+            You Are not on the Que List!.
+          </h1>
+        </div>
       </UCard>
     </UModal>
   </div>

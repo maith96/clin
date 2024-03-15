@@ -5,10 +5,7 @@ export default defineNuxtConfig({
       'trpc-nuxt'
     ]
   },
-  modules: [
-    '@sidebase/nuxt-auth',
-    '@nuxt/ui'
-  ],
+  modules: ['@sidebase/nuxt-auth', '@nuxt/ui', '@sidebase/nuxt-session', '@sidebase/nuxt-pdf', '@pinia/nuxt'],
   typescript: {
     shim: false
   }

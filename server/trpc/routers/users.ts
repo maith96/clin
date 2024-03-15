@@ -10,7 +10,7 @@ export const usersRouter = router({
       email: z.string(),
       password: z.string()
     })
-  ).query(async ({ ctx, input}) => {
+  ).query(async ({ ctx, input }) => {
     const user = await ctx.prisma.user.findUnique({
       where: {
         email: input.email,
@@ -28,7 +28,9 @@ export const usersRouter = router({
         }
       }
     })
-    return { message: 'hi' }
+    console.log(user)
+
+    return user
   }),
   create: publicProcedure.input(
     z.object({
@@ -37,10 +39,8 @@ export const usersRouter = router({
       middleName: z.string(),
       email: z.string(),
       password: z.string(),
-      contactNumber: z.number(),
+      contactNumber: z.string(),
       age: z.number(),
-      weight: z.number(),
-      height: z.number(),
       gender: z.string(),
       address: z.string(),
       title: z.string(),

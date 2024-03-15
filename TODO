@@ -1,0 +1,10 @@
+
+Todo:
+  ☐ Implement Doctor Fill in Medical Certificate
+  ☐ Implement receptionist Authentification
+  ☐ Patient download Medical Certificate
+
+Fixme:
+  ☐ Refresh appointment lists
+  ☐ Re-Authenticate if not logged in
+  ☐ user Session

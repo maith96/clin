@@ -17,45 +17,38 @@ const prop = defineProps({
     </h1>
     <div class="px-5 py-2 flex justify-between bg-gray-100 m-3">
       <b class="flex-1">Names: </b>
-      <span  class="flex-1">{{ prop.userData.firstName }} {{ prop.userData.middleName }} {{ prop.userData.lastName }}</span>
+      <span class="flex-1">{{ prop.userData.firstName }} {{ prop.userData.middleName }} {{ prop.userData.lastName }}</span>
     </div>
     <div class="px-5 py-2 flex justify-between bg-gray-100 m-3">
       <b class="flex-1">Age: </b>
-      <span  class="flex-1">{{ prop.userData.age }}</span>
+      <span class="flex-1">{{ prop.userData.age }}</span>
     </div>
 
     <div class="px-5 py-2 flex justify-between bg-gray-100 m-3">
-      <b class="flex-1">Height: </b>
-      <p  class="flex-1">{{ prop.userData.height }}</p>
-    </div>
-    <div class="px-5 py-2 flex justify-between bg-gray-100 m-3">
-      <b class="flex-1">Weight: </b>
-      <p class="flex-1">{{ prop.userData.weight }}</p>
-    </div>
-    <div class="px-5 py-2 flex justify-between bg-gray-100 m-3">
       <b class="flex-1">Email: </b>
-      <p class="flex-1">{{ prop.userData.email }}</p>
+      <p class="flex-1">
+        {{ prop.userData.email }}
+      </p>
     </div>
 
     <div class="px-5 py-2 flex justify-between bg-gray-100 m-3">
       <b class="flex-1">Contact Number: </b>
-      <p class="flex-1">+254{{ prop.userData.contactNumber }}</p>
+      <p class="flex-1">
+        +254{{ prop.userData.contactNumber }}
+      </p>
     </div>
     <div class="px-5 py-2 flex justify-between bg-gray-100 m-3">
       <b class="flex-1">Address: </b>
-      <p class="flex-1">{{ prop.userData.address }}</p>
+      <p class="flex-1">
+        {{ prop.userData.address }}
+      </p>
     </div>
-    <div class="px-5 py-2 flex justify-between bg-gray-100 m-3">
-      <b class="flex-1">Allergies: </b>
-      <div class="flex-1">
-        <p>Meat</p>
-        <p>Dairy</p>
-        <p>Pets</p>
-      </div>
-    </div>
+
     <div class="px-5 py-2 flex justify-between bg-gray-100 m-3">
       <b class="flex-1">Date Registered: </b>
-      <p class="flex-1">{{ prop.userData.createdAt }}</p>
+      <p class="flex-1">
+        {{ prop.userData.createdAt }}
+      </p>
     </div>
   </div>
 </template>

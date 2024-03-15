@@ -12,7 +12,10 @@
   },
   "devDependencies": {
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
+    "@pinia/nuxt": "^0.5.1",
     "@sidebase/nuxt-auth": "^0.6.4",
+    "@sidebase/nuxt-pdf": "^1.0.0-alpha.0",
+    "@sidebase/nuxt-session": "^0.2.8",
     "@types/node": "^18.11.18",
     "eslint": "^8.33.0",
     "nuxt": "^3.9.1",
@@ -26,15 +29,24 @@
     "@trpc/client": "^10.45.0",
     "@trpc/server": "^10.45.0",
     "@vonage/server-sdk": "^3.13.1",
+    "express": "^4.18.3",
     "flatpickr": "^4.6.13",
+    "h3-formidable": "^1.0.0",
     "moment": "^2.30.1",
+    "multer": "^1.4.5-lts.1",
+    "pinia": "^2.1.7",
     "superjson": "^2.2.1",
     "trpc-nuxt": "^0.10.15",
+    "twilio": "^4.23.0",
     "vue-flatpickr-component": "^11.0.4",
+    "vue-signature": "^2.6.0",
     "vuejs3-datepicker": "^1.1.2",
     "zod": "^3.22.4"
   },
   "peerDependencies": {
     "next-auth": "4.21.1"
+  },
+  "overrides": {
+    "vue": "latest"
   }
 }
