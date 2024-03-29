@@ -1,0 +1,27 @@
+[
+    {
+        "distance_of_point_to_center":  {
+            "1": 15.42903052, "cost_to_center":"increase with distance",
+            "2": 16.04989501,
+            "3": 15.28403744,
+            "4": 14.37635372,
+            "5": 15.85199028,
+            "6": 13.26637604,
+            "7": 16.44696380,
+            "8": 15.54528056,
+            "9": 11.75812576,
+            "10": 13.67324192,
+            "11": 14.59564904,
+            "12": 11.54366416,
+            "13": 14.72652988,
+            "14": 11.91454568,
+            "15": 13.33762248
+        },
+
+        "network_type": [
+            { "name": "large", "cost": 34, "customer_satisfaction": 0.85},
+            { "name": "medium", "cost": 28, "customer_satisfaction": 0.5},
+            { "name": "small", "cost": 20, "customer_satisfaction": 0.2}
+        ]
+    }
+]

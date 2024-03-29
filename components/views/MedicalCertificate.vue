@@ -9,27 +9,29 @@
       </h3>
     </div>
     <div class="max-w[70%]">
-      <div class=" p-2 flex">
-        <strong class=" p-2">Name:</strong> <span class=" p-2">{{ report.data?.patient.user.firstName }} {{ report.data?.patient.user.middleName }} {{ report.data?.patient.user.lastName }}</span>
-      </div>
-      <div class=" p-1 flex">
-        <strong class=" p-2">Sex:</strong><span class=" p-2">{{ report.data?.patient.user.gstarter }}</span>
-      </div>
-      <div class=" p-2 flex">
-        <strong class=" p-2">ID No.:</strong> <span class=" p-2">{{ report.data?.patient.user.nationalIdNumber }}</span>
-      </div>
-
-      <div class="m-0 flex justify-between">
+      <div class="flex justify-between items-center">
         <div class=" p-2 flex">
-          <strong class=" p-2">Age:</strong> <span class=" p-2">{{ report.data?.patient.user.age }}</span>
+          <strong class=" p-2">Name:</strong> <span class=" p-2">{{ report.data?.patient.user.firstName }} {{ report.data?.patient.user.middleName }} {{ report.data?.patient.user.lastName }}</span>
+        </div>
+        <div class=" p-1 flex">
+          <strong class=" p-2">Sex:</strong><span class=" p-2">{{ report.data?.patient.user.gender }}</span>
+        </div>
+        <div class="m-0 flex justify-between">
+          <div class=" p-2 flex">
+            <strong class=" p-2">Age:</strong> <span class=" p-2">{{ report.data?.patient.user.age }}</span>
+          </div>
         </div>
       </div>
-      <div class=" p-2 flex">
-        <strong class=" p-2">Contact:</strong> <span class=" p-2">{{ report.data?.patient.user.contactNumber }}</span>
+      <div class="flex justify-between items-center">
+        <div class=" p-2 flex">
+          <strong class=" p-2">ID No.:</strong> <span class=" p-2">{{ report.data?.patient.user.nationalIdNumber }}</span>
+        </div>
+
+        <div class=" p-2 flex">
+          <strong class=" p-2">Contact:</strong> <span class=" p-2">{{ report.data?.patient.user.contactNumber }}</span>
+        </div>
       </div>
-      <div class=" p-2 flex">
-        <strong class=" p-2">Address:</strong> <span class=" p-2">{{ report.data?.patient.user.address }}</span>
-      </div>
+
       <div class="m-0 flex justify-between">
         <div class=" p-2 flex">
           <strong class=" p-2">Illness:</strong> <span class=" p-2">{{ report.data?.illness }}</span>
