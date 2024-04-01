@@ -24,6 +24,13 @@ export const doctorsRouter = router({
       throw createError({ statusCode: 404, statusMessage: 'Failed to create patient' })
     }
     return { id: doctor.id, user: doctor.user, appointments: doctor.appointments }
+  }),
+
+  updateSignature: publicProcedure.input(z.object({ signature: z.string(), id: z.string() })).mutation(async ({ input, ctx }) => {
+    await ctx.prisma.staff.update({
+      where: { id: input.id },
+      data: { signature: input.signature }
+    })
   })
 })
 

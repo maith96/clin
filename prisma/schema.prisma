@@ -20,8 +20,8 @@ model Appointment {
   dateTime  DateTime @default(now())
   status    String // scheduled | completed | inProgress
   inQue     Boolean  @default(false)
-  patient   Patient  @relation(fields: [patientId], references: [id])
-  doctor    Staff    @relation(fields: [doctorId], references: [id])
+  patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor    Staff    @relation(fields: [doctorId], references: [id], onDelete: Cascade)
 }
 
 model Patient {
@@ -29,7 +29,7 @@ model Patient {
   allergies    String        @default("")
   userId       String        @unique
   appointments Appointment[]
-  user         User          @relation(fields: [userId], references: [id])
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   reports      Report[]
 }
 
@@ -40,7 +40,7 @@ model Staff {
   signature String @default("")
   appointments Appointment[]
   reports      Report[]
-  user         User          @relation(fields: [userId], references: [id])
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Report {
@@ -52,8 +52,8 @@ model Report {
   doctorId           String
   dateTime           DateTime            @default(now())
   allocatedMedicines AllocatedMedicine[]
-  doctor             Staff               @relation(fields: [doctorId], references: [id])
-  patient            Patient             @relation(fields: [patientId], references: [id])
+  doctor             Staff               @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  patient            Patient             @relation(fields: [patientId], references: [id], onDelete: Cascade)
 }
 
 model AllocatedMedicine {
@@ -64,7 +64,7 @@ model AllocatedMedicine {
   category  String
   reportId  String
   createdAt DateTime @default(now())
-  report    Report   @relation(fields: [reportId], references: [id])
+  report    Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
 }
 
 model Medicine {
