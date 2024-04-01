@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { FormError, FormSubmitEvent } from '#ui/types'
+import type { FormError } from '#ui/types'
 
-const roles = ['doctor', 'patient', 'otherStaff', 'admin', 'receptionist', 'nurse']
+const roles = ['doctor', 'patient', 'otherStaff', 'admin', 'receptionist']
 const genders = ['Male', 'Female']
 const titles = ['Mr.', 'Mrs.', 'Dr.']
 
