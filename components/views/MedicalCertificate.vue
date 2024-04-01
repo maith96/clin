@@ -86,8 +86,6 @@
 
 <script lang="ts" setup>
 
-import axios from 'axios'
-
 const pdfSection = ref<HTMLElement | null>(null)
 const { id } = useRoute().params
 const { $client } = useNuxtApp()
@@ -107,15 +105,6 @@ async function onFileChange (e: any) {
 }
 
 const userStore = useUserStore()
-
-const BASE_URL = 'http://localhost:300'
-
-function upload (file: File) {
-  const urll = `${BASE_URL}/photos/signatures`
-  const formData = new FormData()
-  formData.append(file.name, file)
-  return axios.post(urll, formData)
-}
 </script>
 
 <style scoped>
