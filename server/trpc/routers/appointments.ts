@@ -50,6 +50,7 @@ export const appointmentsRouter = router({
       },
       include
     })
+    checkDates()
     return all.map((ap) => {
       return {
         id: ap.id,
