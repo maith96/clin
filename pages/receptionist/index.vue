@@ -33,10 +33,29 @@ const { data: appointments, refresh } = useAsyncData('appointments', async () =>
   })
 })
 
+async function onFileChange (e: any) {
+  const formData = new FormData()
+  const file = e.target.files[0]
+  formData.append('file', file)
+  formData.append('language', 'eng')
+  formData.append('apikey', 'K84398234288957')
+  formData.append('isOverlayRequired', true)
+  const res = await $fetch('https://api.ocr.space/parse/image', {
+    method: 'post',
+    body: formData,
+    headers: {
+      'Content-Type': false // adjust content type as per your data
+
+    }
+
+  })
+  console.log(res)
+}
 </script>
 
 <template>
   <div class="md:w-[70%] m-auto">
+    <input id="" type="file" name="" @change="onFileChange">
     <!-- <div class="flex justify-center">
     <ULink to="/receptionist/que-list">Que List</ULink>
   </div> -->

@@ -82,6 +82,7 @@ export const appointmentsRouter = router({
       if (!patientAppointments) {
         throw createError({ statusCode: 404, statusMessage: 'Failed to get appointments of patient' })
       }
+      checkDates(patientAppointments, ctx.prisma)
       return patientAppointments.map((ap) => {
         return {
           id: ap.id,
@@ -129,7 +130,7 @@ export const appointmentsRouter = router({
       if (!doctorAppointments) {
         throw createError({ statusCode: 404, statusMessage: 'Failed to get appointments of doctor' })
       }
-
+      checkDates(doctorAppointments, ctx.prisma)
       return doctorAppointments
     }),
 
@@ -169,5 +170,35 @@ async function createAppointment (status:string, doctorId:string, patientId:stri
   return appointment
 }
 
+function checkDates (appointments: any, prisma: PrismaClient) {
+  appointments.forEach(async (ap: any) => {
+    if (ap.inQue === true) {
+      if (hasPassedBy30Minutes(ap.dateTime)) {
+        await prisma.appointment.update({
+          where: { id: ap.id },
+          data: { status: 'completed', inQue: false }
+        })
+      }
+    } else if (ap.dateTime < Date.now()) {
+      await prisma.appointment.update({
+        where: { id: ap.id },
+        data: { status: 'completed', inQue: false }
+      })
+    }
+  })
+}
+function hasPassedBy30Minutes (scheduledDatetime: Date) {
+  // Convert scheduledDatetime to milliseconds since Epoch
+  const scheduledTime = new Date(scheduledDatetime).getTime()
+
+  // Get current time in milliseconds since Epoch
+  const currentTime = new Date().getTime()
+
+  // Calculate the difference in milliseconds
+  const timeDifference = currentTime - scheduledTime
+
+  // Check if the time difference is greater than or equal to 30 minutes (in milliseconds)
+  return timeDifference >= 30 * 60 * 1000
+}
 // export type definition of API
 export type AppointmentsRouter = typeof appointmentsRouter

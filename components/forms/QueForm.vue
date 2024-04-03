@@ -2,7 +2,7 @@
 import type { FormError, FormSubmitEvent } from '#ui/types'
 const { $client } = useNuxtApp()
 const res = await $client.patients.allIds.query()
-const patientIds = res.map(d => d.id)
+const patientIds = res.map(d => `${d.user.firstName} ${d.user.middleName} ${d.user.lastName}`)
 
 const state = reactive({
   patient: ''
@@ -14,8 +14,11 @@ const validate = (state: any): FormError[] => {
   return errors
 }
 async function onSubmit (event: FormSubmitEvent<any>) {
-  const newAppointment = await $client.que.add.mutate({ patientId: event.data.patient })
+  const fNames = event.data.patient.split(' ')
+  const pa = res.find(u => (u.user.firstName === fNames[0]) && (u.user.middleName === fNames[1]) && (u.user.lastName === fNames[2]))
+  const newAppointment = await $client.que.add.mutate({ patientId: pa?.id as string })
   if (newAppointment.appointment?.id) {
+    await $client.sms.send.query({ text: `You have been added to the que list. Your sering time is: ${calcWaitTime(newAppointment.appointment.dateTime)}` })
     state.patient = ''
     emit('refreshAppointments')
     alert('Patient has been added to Que!')

@@ -4,7 +4,16 @@ import { publicProcedure, router } from '../trpc'
 export const patientsRouter = router({
   allIds: publicProcedure.query(({ ctx }) => {
     return ctx.prisma.patient.findMany({
-      select: { id: true }
+      select: {
+        id: true,
+        user: {
+          select: {
+            firstName: true,
+            middleName: true,
+            lastName: true
+          }
+        }
+      }
     })
   }),
 

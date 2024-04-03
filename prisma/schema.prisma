@@ -51,7 +51,6 @@ model Report {
   patientId          String
   doctorId           String
   dateTime           DateTime            @default(now())
-  allocatedMedicines AllocatedMedicine[]
   doctor             Staff               @relation(fields: [doctorId], references: [id], onDelete: Cascade)
   patient            Patient             @relation(fields: [patientId], references: [id], onDelete: Cascade)
 }
@@ -68,7 +67,7 @@ model User {
   age           Int
   gender        String
   email         String   @unique
-  address       String
+  address       String?
   title         String
   role          String // patient | doctor | other | receptionist
   status        String

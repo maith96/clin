@@ -18,7 +18,6 @@ export const queRouter = router({
       // await sendSMS('25474875877')
       return { appointment: appointment1 }
     }
-
     const earliestAppointment = await getEarliestAppointment(ctx.prisma)
     if (earliestAppointment) {
       const dateTime = earliestAppointment.dateTime
@@ -93,6 +92,7 @@ async function availableDoctor (prisma: PrismaClient) {
       NOT: {
         appointments: {
           some: {
+            inQue: true,
             status: {
               in: ['scheduled', 'inProgress']
             }
@@ -118,7 +118,6 @@ async function getEarliestAppointment (prisma: PrismaClient) {
       dateTime: 'asc'
     }
   })
-
   return earliest
 }
 async function createAppointment (status:string, doctorId:string, patientId:string, dateTime:Date, prisma: PrismaClient, inQue: boolean = false) {
